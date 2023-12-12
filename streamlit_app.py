@@ -20,6 +20,13 @@ def main():
     # User enters their name
     user_name = st.text_input("Enter your name:", placeholder="Siddharth")
 
+    if user_name == "admin":
+        import datetime
+        now = datetime.datetime.now()
+        file_name = str(now.date()) + ".csv"
+        st.download_button(label="Download data as CSV", data=df.to_csv().encode('utf-8'), file_name=file_name, mime='text/csv')
+
+
     # Select mode
     page = st.selectbox("What do you want to do?", ["Create My Wishlist", "Buy For Others"])
 
@@ -46,7 +53,7 @@ def main():
         st.header("Current Wishlist")
         user_wishlist = df[df['Name'] == user_name]
         user_wishlist.insert(0, "Remove", False)
-        edited_selection_df = st.data_editor(user_wishlist[["Remove", "Name", "Item", "Description", "Link"]])
+        edited_selection_df = st.data_editor(user_wishlist[["Remove", "Name", "Item", "Description", "Link"]], hide_index=True)
 
         if st.button("Remove Items"):
             df = df.drop(user_wishlist[edited_selection_df["Remove"]].index.to_list())
@@ -67,7 +74,7 @@ def main():
         st.header(f"{selected_person}'s Wishlist")
         selected_person_wishlist = df[df['Name'] == selected_person]
         selected_person_wishlist.insert(0, "Select", False)
-        edited_selection_df = st.data_editor(selected_person_wishlist[["Select", "Name", "Item", "Description", "Link", "Claimed By"]], key=1)
+        edited_selection_df = st.data_editor(selected_person_wishlist[["Select", "Name", "Item", "Description", "Link", "Claimed By"]], hide_index=True, key=1)
 
         col1, col2, blank = st.columns([1, 2, 3])
         if col1.button("Claim Items"):
@@ -100,7 +107,7 @@ def main():
         # Display the selected person's list
         claimed_items = df[df['Claimed By'] == user_name]
         claimed_items.insert(0, "Select", False)
-        shopping_list = st.data_editor(claimed_items[["Select", "Name", "Item", "Description", "Link", "Claimed By"]], key=3)
+        shopping_list = st.data_editor(claimed_items[["Select", "Name", "Item", "Description", "Link", "Claimed By"]], hide_index=True, key=3)
 
         if st.button("Unclaim Items", key=4):
             selections = claimed_items[shopping_list["Select"]].index.to_list()
