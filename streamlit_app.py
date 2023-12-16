@@ -1,13 +1,15 @@
 import streamlit as st
 import pandas as pd
 
+DATA_PATH = "data/2023-12-15.csv"
+
 # Function to create or load CSV file
 def create_or_load_csv():
     try:
-        df = pd.read_csv('xmas_list.csv')
+        df = pd.read_csv(DATA_PATH)
     except FileNotFoundError:
         df = pd.DataFrame(columns=['Name', 'Item', 'Description', 'Link', 'Claimed By'])
-        df.to_csv('xmas_list.csv', index=False)
+        df.to_csv(DATA_PATH, index=False)
     return df
 
 # Main function to run the Streamlit app
@@ -43,10 +45,10 @@ def main():
         # Submit button
         if st.button("Add Item"):
             # Append the data to the CSV file
-            prev_entries = pd.read_csv('xmas_list.csv')
+            prev_entries = pd.read_csv(DATA_PATH)
             new_entry = pd.DataFrame([{'Name': user_name, 'Item': item, 'Description': description, 'Link': link, 'Claimed By': None}])
             df = pd.concat([prev_entries, new_entry], ignore_index=True)
-            df.to_csv('xmas_list.csv', index=False)
+            df.to_csv(DATA_PATH, index=False)
             st.success("Item submitted successfully!")
 
         # Display the current wishlist
@@ -57,7 +59,7 @@ def main():
 
         if st.button("Remove Items"):
             df = df.drop(user_wishlist[edited_selection_df["Remove"]].index.to_list())
-            df.to_csv('xmas_list.csv', index=False)
+            df.to_csv(DATA_PATH, index=False)
             st.success("Item submitted successfully!")
     
     elif page == "Buy For Others":
@@ -88,7 +90,7 @@ def main():
                     st.write("You've already claimed this item.")
                 else:
                     st.error(f"Someone else has already claimed {row['Item']} for {row['Name']}.")
-            df.to_csv('xmas_list.csv', index=False)
+            df.to_csv(DATA_PATH, index=False)
 
         if col2.button("Unclaim Items", key=2):
             selections = selected_person_wishlist[edited_selection_df["Select"]].index.to_list()
@@ -99,7 +101,7 @@ def main():
                     st.success(f"Successfully unclaimed {row['Item']} for {row['Name']}.")
                 else:
                     st.error(f"You hadn't claimed buying {row['Item']} for {row['Name']}.")
-            df.to_csv('xmas_list.csv', index=False)
+            df.to_csv(DATA_PATH, index=False)
         
         # Complete list of all claimed items
         st.header("My Shopping List")
@@ -118,7 +120,7 @@ def main():
                     st.success(f"Successfully unclaimed {row['Item']} for {row['Name']}.")
                 else:
                     st.error(f"You hadn't claimed buying {row['Item']} for {row['Name']}.")
-            df.to_csv('xmas_list.csv', index=False)
+            df.to_csv(DATA_PATH, index=False)
 
 if __name__ == "__main__":
     main()
